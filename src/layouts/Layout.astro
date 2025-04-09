@@ -38,7 +38,7 @@ import Footer from '../components/Footer.astro';
 				// Actualizar contenedor del carrito si existe
 				if (cartContainer && cartTotal) {
 					if (cartItems.length === 0) {
-						cartContainer.innerHTML = '<p class="text-gray-500">El carrito está vacío</p>';
+						cartContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Tu carrito está vacío</p>';
 						cartTotal.textContent = '$0.00';
 						return;
 					}
@@ -46,33 +46,18 @@ import Footer from '../components/Footer.astro';
 					const total = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
 					
 					cartContainer.innerHTML = cartItems.map(item => `
-						<div class="flex items-center border-b pb-4" data-item-id="${item.id}">
-							<img 
-								src="${item.image}" 
-								alt="${item.name}" 
-								class="w-20 h-20 object-cover mr-4"
-							/>
-							<div class="flex-grow">
-								<h3 class="font-semibold">${item.name}</h3>
-								<p class="text-gray-700">$${item.price.toFixed(2)}</p>
-								<div class="flex items-center mt-2">
-									<button 
-										onclick="updateQuantity('${item.id}', -1)"
-										class="px-2 py-1 border rounded-l"
-									>-</button>
-									<span class="px-3 py-1 border-t border-b">${item.quantity || 1}</span>
-									<button 
-										onclick="updateQuantity('${item.id}', 1)"
-										class="px-2 py-1 border rounded-r"
-									>+</button>
-									<button 
-										onclick="removeFromCart('${item.id}')"
-										class="ml-4 text-red-500 text-sm hover:text-red-700"
-									>
-										Eliminar
-									</button>
+						<div class="flex items-center gap-4 py-4">
+							<img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+							<div class="flex-1 min-w-0">
+								<h4 class="font-semibold truncate">${item.name}</h4>
+								<div class="flex items-center gap-2 mt-1">
+									<button onclick="updateQuantity('${item.id}', -1)" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">−</button>
+									<span class="w-8 text-center">${item.quantity || 1}</span>
+									<button onclick="updateQuantity('${item.id}', 1)" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">+</button>
+									<span class="ml-2">$${(item.price * (item.quantity || 1)).toFixed(2)}</span>
 								</div>
 							</div>
+							<button onclick="removeFromCart('${item.id}')" class="text-red-500 hover:text-red-700 transition-colors">×</button>
 						</div>
 					`).join('');
 
