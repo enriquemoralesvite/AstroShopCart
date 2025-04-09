@@ -36,15 +36,12 @@ import CartPreview from './CartPreview.astro';
         }
 
         document.addEventListener('click', (e) => {
-            const target = e.target;
-            if (target instanceof Element && !cartContainer?.contains(target)) {
+            if (e.target instanceof Element && !cartContainer?.contains(e.target)) {
                 cartPreview?.classList.add('hidden');
             }
         });
 
-        cartContainer?.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
+        cartContainer?.addEventListener('click', (e) => e.stopPropagation());
     });
 </script>
 
