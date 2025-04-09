@@ -20,6 +20,134 @@ import Footer from '../components/Footer.astro';
 			<slot />
 		  </main>
 		<Footer />
+
+		<script is:inline>
+			// Función para actualizar la UI del carrito
+			window.updateCartUI = function() {
+				const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+				const cartContainer = document.getElementById('cart-items');
+				const cartTotal = document.getElementById('cart-total');
+				const cartBadge = document.getElementById('cart-badge');
+				
+				// Actualizar badge
+				if (cartBadge) {
+					cartBadge.textContent = cartItems.length.toString();
+					cartBadge.classList.toggle('hidden', cartItems.length === 0);
+				}
+
+				// Actualizar contenedor del carrito si existe
+				if (cartContainer && cartTotal) {
+					if (cartItems.length === 0) {
+						cartContainer.innerHTML = '<p class="text-gray-500">El carrito está vacío</p>';
+						cartTotal.textContent = '$0.00';
+						return;
+					}
+
+					const total = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+					
+					cartContainer.innerHTML = cartItems.map(item => `
+						<div class="flex items-center border-b pb-4" data-item-id="${item.id}">
+							<img 
+								src="${item.image}" 
+								alt="${item.name}" 
+								class="w-20 h-20 object-cover mr-4"
+							/>
+							<div class="flex-grow">
+								<h3 class="font-semibold">${item.name}</h3>
+								<p class="text-gray-700">$${item.price.toFixed(2)}</p>
+								<div class="flex items-center mt-2">
+									<button 
+										onclick="updateQuantity('${item.id}', -1)"
+										class="px-2 py-1 border rounded-l"
+									>-</button>
+									<span class="px-3 py-1 border-t border-b">${item.quantity || 1}</span>
+									<button 
+										onclick="updateQuantity('${item.id}', 1)"
+										class="px-2 py-1 border rounded-r"
+									>+</button>
+									<button 
+										onclick="removeFromCart('${item.id}')"
+										class="ml-4 text-red-500 text-sm hover:text-red-700"
+									>
+										Eliminar
+									</button>
+								</div>
+							</div>
+						</div>
+					`).join('');
+
+					cartTotal.textContent = `$${total.toFixed(2)}`;
+				}
+			}
+
+			// Función para eliminar un item del carrito
+			window.removeFromCart = function(id) {
+				try {
+					const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+					const updatedCart = cart.filter(item => item.id !== id);
+					localStorage.setItem('cart', JSON.stringify(updatedCart));
+					
+					window.updateCartUI();
+					window.dispatchEvent(new CustomEvent('cartUpdated'));
+					
+					// Mostrar notificación
+					const notification = document.createElement('div');
+					notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+					notification.textContent = 'Producto eliminado del carrito';
+					document.body.appendChild(notification);
+					
+					setTimeout(() => notification.remove(), 3000);
+				} catch (error) {
+					console.error('Error al eliminar del carrito:', error);
+				}
+			}
+
+			// Función para actualizar cantidad
+			window.updateQuantity = function(id, change) {
+				const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+				const itemIndex = cart.findIndex(item => item.id === id);
+				
+				if (itemIndex !== -1) {
+					const currentQuantity = cart[itemIndex].quantity || 1;
+					const newQuantity = currentQuantity + change;
+					
+					if (newQuantity <= 0) {
+						if (confirm('¿Deseas eliminar este producto del carrito?')) {
+							cart.splice(itemIndex, 1);
+						} else {
+							return;
+						}
+					} else {
+						cart[itemIndex].quantity = newQuantity;
+					}
+					
+					localStorage.setItem('cart', JSON.stringify(cart));
+					window.updateCartUI();
+					window.dispatchEvent(new CustomEvent('cartUpdated'));
+				}
+			}
+
+			// Función para agregar al carrito
+			window.addToCart = function(item) {
+				const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+				cart.push({...item, quantity: 1});
+				localStorage.setItem('cart', JSON.stringify(cart));
+				
+				window.updateCartUI();
+				window.dispatchEvent(new CustomEvent('cartUpdated'));
+				
+				// Mostrar notificación
+				const notification = document.createElement('div');
+				notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+				notification.textContent = 'Producto añadido al carrito';
+				document.body.appendChild(notification);
+				
+				setTimeout(() => notification.remove(), 3000);
+			}
+
+			// Inicializar el carrito cuando se carga la página
+			document.addEventListener('DOMContentLoaded', window.updateCartUI);
+		</script>
 	</body>
 </html>
 

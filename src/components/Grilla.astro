@@ -1,28 +1,60 @@
 ---
+interface Producto {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    description: string;
+}
+
 import Tarjeta from '../components/Tarjeta.astro';
+
+const productos: Producto[] = [
+    {
+        id: 'product-1',
+        name: 'Wireless Headphones',
+        price: 129.99,
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/800px-Placeholder_view_vector.svg.png',
+        description: 'Premium wireless headphones with noise cancellation and long battery life.'
+    },
+    {
+        id: 'product-2',
+        name: 'Smart Watch',
+        price: 199.99,
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/800px-Placeholder_view_vector.svg.png',
+        description: 'Advanced smartwatch with health monitoring and notifications.'
+    },
+    {
+        id: 'product-3',
+        name: 'Laptop Pro',
+        price: 999.99,
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/800px-Placeholder_view_vector.svg.png',
+        description: 'High-performance laptop for professionals and creatives.'
+    },
+    {
+        id: 'product-4',
+        name: 'Wireless Mouse',
+        price: 49.99,
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/800px-Placeholder_view_vector.svg.png',
+        description: 'Ergonomic wireless mouse with precision tracking.'
+    },
+    {
+        id: 'product-5',
+        name: 'Mechanical Keyboard',
+        price: 89.99,
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/800px-Placeholder_view_vector.svg.png',
+        description: 'RGB mechanical keyboard with customizable switches.'
+    },
+    {
+        id: 'product-6',
+        name: 'Gaming Monitor',
+        price: 299.99,
+        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/800px-Placeholder_view_vector.svg.png',
+        description: 'High refresh rate gaming monitor with HDR support.'
+    }
+];
 ---
 
-
-<div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div>
-            <Tarjeta />
-        </div>
-        <div>
-            <Tarjeta />
-        </div>
-        <div>
-            <Tarjeta />
-        </div>
-        <div>
-            <Tarjeta />
-        </div>
-        <div>
-            <Tarjeta />
-        </div>
-        <div>
-            <Tarjeta />
-        </div>
-        
-    </div>
-</div>
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {productos.map(producto => <Tarjeta {...producto} />)}
+</section>

@@ -1,0 +1,171 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+interface CartItem {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    quantity?: number;
+}
+---
+
+<Layout>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Tu Carrito</h1>
+        
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Lista de productos -->
+            <div class="lg:w-2/3">
+                <div id="cart-items" class="space-y-4">
+                    <p class="text-gray-500">Cargando items...</p>
+                </div>
+            </div>
+
+            <!-- Resumen del pedido -->
+            <div class="lg:w-1/3">
+                <div class="bg-gray-50 p-6 rounded-lg sticky top-4">
+                    <h2 class="text-xl font-semibold mb-4">Resumen del Pedido</h2>
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between">
+                            <span>Subtotal</span>
+                            <span id="subtotal">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>IVA (16%)</span>
+                            <span id="tax">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-semibold">
+                            <span>Total</span>
+                            <span id="total">$0.00</span>
+                        </div>
+                    </div>
+                    <button id="checkout-button" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                        Proceder al Pago
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        interface CartItem {
+            id: string;
+            name: string;
+            price: number;
+            image: string;
+            quantity?: number;
+        }
+
+        function updateCart() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
+            const cartContainer = document.getElementById('cart-items');
+            const subtotalElement = document.getElementById('subtotal');
+            const taxElement = document.getElementById('tax');
+            const totalElement = document.getElementById('total');
+            const checkoutButton = document.getElementById('checkout-button');
+
+            if (!cartContainer || !subtotalElement || !taxElement || !totalElement || !checkoutButton) {
+                console.error('No se encontraron elementos necesarios del DOM');
+                return;
+            }
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `
+                    <div class="text-center py-8">
+                        <p class="text-gray-500 mb-4">Tu carrito está vacío</p>
+                        <a href="/" class="text-blue-600 hover:underline">Continuar comprando</a>
+                    </div>
+                `;
+                subtotalElement.textContent = '$0.00';
+                taxElement.textContent = '$0.00';
+                totalElement.textContent = '$0.00';
+                checkoutButton.setAttribute('disabled', 'true');
+                checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
+            let subtotal = 0;
+            cartContainer.innerHTML = cart.map((producto: CartItem) => {
+                const itemTotal = producto.price * (producto.quantity || 1);
+                subtotal += itemTotal;
+                return `
+                    <div class="flex items-center border rounded-lg p-4 hover:shadow-md transition-shadow" data-item-id="${producto.id}">
+                        <img src="${producto.image}" alt="${producto.name}" class="w-24 h-24 object-cover rounded-md">
+                        <div class="ml-6 flex-grow">
+                            <h3 class="font-semibold text-lg">${producto.name}</h3>
+                            <p class="text-gray-600 mb-2">Precio unitario: $${producto.price.toFixed(2)}</p>
+                            <div class="flex items-center">
+                                <button 
+                                    onclick="updateQuantity('${producto.id}', -1)"
+                                    class="px-3 py-1 border rounded-l hover:bg-gray-100"
+                                >-</button>
+                                <span class="px-4 py-1 border-t border-b">${producto.quantity || 1}</span>
+                                <button 
+                                    onclick="updateQuantity('${producto.id}', 1)"
+                                    class="px-3 py-1 border rounded-r hover:bg-gray-100"
+                                >+</button>
+                                <span class="ml-4 font-semibold">$${itemTotal.toFixed(2)}</span>
+                                <button 
+                                    onclick="removeItem('${producto.id}')"
+                                    class="ml-4 text-red-500 hover:text-red-700"
+                                >Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const tax = subtotal * 0.16;
+            const total = subtotal + tax;
+
+            subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+            taxElement.textContent = `$${tax.toFixed(2)}`;
+            totalElement.textContent = `$${total.toFixed(2)}`;
+            
+            checkoutButton.removeAttribute('disabled');
+            checkoutButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function updateQuantity(productoId: string, cantidad: number) {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
+            const itemIndex = cart.findIndex(producto => producto.id === productoId);
+            
+            if (itemIndex !== -1) {
+                const currentQuantity = cart[itemIndex].quantity || 1;
+                const newQuantity = currentQuantity + cantidad;
+                
+                if (newQuantity <= 0) {
+                    if (confirm('¿Deseas eliminar este producto del carrito?')) {
+                        cart.splice(itemIndex, 1);
+                    } else {
+                        return;
+                    }
+                } else {
+                    cart[itemIndex].quantity = newQuantity;
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
+            }
+        }
+
+        function removeItem(productoId: string) {
+            if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
+                const updatedCart = cart.filter(producto => producto.id !== productoId);
+                localStorage.setItem('cart', JSON.stringify(updatedCart));
+                updateCart();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
+            }
+        }
+
+        const checkoutButton = document.getElementById('checkout-button');
+        checkoutButton?.addEventListener('click', () => {
+            window.location.href = '/checkout';
+        });
+
+        document.addEventListener('DOMContentLoaded', updateCart);
+    </script>
+</Layout> 

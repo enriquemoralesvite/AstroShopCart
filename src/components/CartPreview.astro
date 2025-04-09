@@ -1,0 +1,118 @@
+---
+interface CartItem {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    quantity?: number;
+}
+
+declare global {
+    interface Window {
+        updateQuantity: (id: string, change: number) => void;
+        removeFromCart: (id: string) => void;
+    }
+}
+---
+
+<div id="cart-preview" class="hidden fixed right-4 top-16 w-96 bg-white shadow-xl rounded-lg p-4 z-50">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Tu Carrito (<span id="cart-preview-count">0</span>)</h3>
+        <button id="close-cart" class="text-gray-500 hover:text-gray-700 transition-colors">×</button>
+    </div>
+    
+    <div id="cart-preview-items" class="max-h-96 overflow-y-auto divide-y divide-gray-200">
+        <!-- Items will be inserted here -->
+    </div>
+
+    <div class="border-t mt-4 pt-4">
+        <div class="flex justify-between mb-4">
+            <span class="font-semibold">Total</span>
+            <span id="cart-preview-total" class="font-semibold">$0.00</span>
+        </div>
+        <div class="flex gap-2">
+            <a href="/canasta" class="flex-1 bg-gray-100 text-black px-4 py-2 rounded text-center hover:bg-gray-200 transition-colors">
+                Ver Carrito
+            </a>
+            <a href="/checkout" class="flex-1 bg-black text-white px-4 py-2 rounded text-center hover:bg-gray-800 transition-colors">
+                Checkout
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    interface CartItem {
+        id: string;
+        name: string;
+        price: number;
+        image: string;
+        quantity?: number;
+    }
+
+    function updatePreview() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
+        const container = document.getElementById('cart-preview-items');
+        const countElement = document.getElementById('cart-preview-count');
+        const totalElement = document.getElementById('cart-preview-total');
+        
+        if (!container || !countElement || !totalElement) return;
+        
+        countElement.textContent = cart.length.toString();
+        
+        if (cart.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-center py-4">Tu carrito está vacío</p>';
+            totalElement.textContent = '$0.00';
+            return;
+        }
+
+        let total = 0;
+        container.innerHTML = cart.map((item: CartItem) => {
+            const itemTotal = item.price * (item.quantity || 1);
+            total += itemTotal;
+            return `
+                <div class="flex items-center gap-4 py-4">
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold truncate">${item.name}</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                            <button onclick="window.updateQuantity('${item.id}', -1)" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">−</button>
+                            <span class="w-8 text-center">${item.quantity || 1}</span>
+                            <button onclick="window.updateQuantity('${item.id}', 1)" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">+</button>
+                            <span class="ml-2">$${itemTotal.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <button onclick="window.removeFromCart('${item.id}')" class="text-red-500 hover:text-red-700 transition-colors">×</button>
+                </div>
+            `;
+        }).join('');
+
+        totalElement.textContent = `$${total.toFixed(2)}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', updatePreview);
+    window.addEventListener('storage', (e) => e.key === 'cart' && updatePreview());
+    window.addEventListener('cartUpdated', updatePreview);
+    
+    document.getElementById('close-cart')?.addEventListener('click', () => {
+        document.getElementById('cart-preview')?.classList.add('hidden');
+    });
+</script>
+
+<style>
+    .quantity-btn {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        background-color: rgb(243 244 246);
+        border-radius: 0.25rem;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
+    
+    .quantity-btn:hover {
+        background-color: rgb(229 231 235);
+    }
+</style> 
