@@ -31,14 +31,9 @@ declare global {
             <span class="font-semibold">Total</span>
             <span id="cart-total" class="font-semibold">$0.00</span>
         </div>
-        <div class="flex gap-2">
-            <a href="/canasta" class="flex-1 bg-gray-100 text-black px-4 py-2 rounded text-center hover:bg-gray-200 transition-colors">
-                Ver Carrito
-            </a>
-            <a href="/checkout" class="flex-1 bg-black text-white px-4 py-2 rounded text-center hover:bg-gray-800 transition-colors">
-                Checkout
-            </a>
-        </div>
+        <a href="/canasta" class="block w-full bg-black text-white px-4 py-2 rounded text-center hover:bg-gray-800 transition-colors">
+            Ver Carrito
+        </a>
     </div>
 </div>
 
@@ -59,7 +54,7 @@ declare global {
         const cartBadge = document.getElementById('cart-badge');
         const cartPreviewCount = document.getElementById('cart-preview-count');
         
-        // Actualizar badge y contador
+        // Actualizar contadores
         if (cartBadge && cartPreviewCount) {
             const itemCount = cartItems.length;
             cartBadge.textContent = itemCount.toString();
@@ -67,7 +62,7 @@ declare global {
             cartBadge.classList.toggle('hidden', itemCount === 0);
         }
 
-        // Actualizar contenedor del carrito
+        // Actualizar contenido del carrito
         if (cartContainer && cartTotal) {
             if (cartItems.length === 0) {
                 cartContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Tu carrito está vacío</p>';
@@ -75,9 +70,9 @@ declare global {
                 return;
             }
 
-            const total = cartItems.reduce((sum: number, item: CartItem) => sum + item.price * (item.quantity || 1), 0);
+            const total = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
             
-            cartContainer.innerHTML = cartItems.map((item: CartItem) => `
+            cartContainer.innerHTML = cartItems.map(item => `
                 <div class="flex items-center gap-4 py-4">
                     <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
                     <div class="flex-1 min-w-0">
@@ -147,31 +142,11 @@ declare global {
         });
     });
 
-    // Actualizar cuando cambie el almacenamiento
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'cart') {
-            window.updateCartUI();
-        }
-    });
-
-    // Actualizar cuando se dispare el evento cartUpdated
+    // Actualizar cuando cambie el almacenamiento o se dispare el evento cartUpdated
+    window.addEventListener('storage', () => window.updateCartUI());
     window.addEventListener('cartUpdated', window.updateCartUI);
 </script>
 
 <style>
-    .quantity-btn {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        background-color: rgb(243 244 246);
-        border-radius: 0.25rem;
-        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
-    }
-    
-    .quantity-btn:hover {
-        background-color: rgb(229 231 235);
-    }
+    /* Eliminando estilos personalizados ya que usamos Tailwind */
 </style> 
