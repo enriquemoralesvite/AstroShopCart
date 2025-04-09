@@ -1,16 +1,24 @@
-    <div class="space-y-4">
-        <div class="space-y-4">
-            <h2 class="font-semibold text-lg">Categorías</h2>
-            <div class="flex flex-col space-y-2">
-                <a href="#" class="text-gray-700 ml-4 px-6 py-3 hover:bg-black hover:text-white hover:rounded-lg border border-transparent hover:border-gray-800">Todos los productos</a>
-                <a href="#" class="text-gray-700 ml-4 px-6 py-3 hover:bg-black hover:text-white hover:rounded-lg border border-transparent hover:border-gray-800">Fashion</a>
-                <a href="#" class="text-gray-700 ml-4 px-6 py-3 hover:bg-black hover:text-white hover:rounded-lg border border-transparent hover:border-gray-800">Garden</a>
-                <a href="#" class="text-gray-700 ml-4 px-6 py-3 hover:bg-black hover:text-white hover:rounded-lg border border-transparent hover:border-gray-800">Sports</a>
-            </div>
-            
-            
+---
+const categories = [
+  { id: 'all', name: 'Todos los productos' },
+  { id: 'electronics', name: 'Electrónicos' },
+  { id: 'clothing', name: 'Ropa' },
+  { id: 'books', name: 'Libros' },
+  { id: 'home', name: 'Hogar' }
+];
+---
 
-        </div>
-
-    </div>
+<div class="space-y-4 mb-8">
+  <h2 class="font-semibold text-lg">Categorías</h2>
+  <div class="flex flex-col space-y-2">
+    {categories.map(category => (
+      <a
+        href={`#${category.id}`}
+        class="text-gray-700 ml-4 px-6 py-3 hover:bg-black hover:text-white hover:rounded-lg border border-transparent hover:border-gray-800 transition-all duration-200"
+      >
+        {category.name}
+      </a>
+    ))}
+  </div>
+</div>
 

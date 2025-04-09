@@ -1,9 +1,67 @@
-<header class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+---
+import CartPreview from './CartPreview.astro';
+---
+
+<header class="bg-white shadow-md px-6 py-4 flex justify-between items-center sticky top-0 z-50">
     <h1 class="text-2xl font-bold">ShopNow</h1>
-    <nav class="space-x-4">
-        <a href="#" class="hover:text-gray-500">Productos</a>
+    <nav class="space-x-4 flex items-center">
+        <a href="/" class="hover:text-gray-500">Productos</a>
         <a href="#" class="hover:text-gray-500">Órdenes</a>
-        <a href="#" class="hover:text-gray-500">Carrito</a>
+        <a href="/canasta" class="hover:text-gray-500">Carrito</a>
         <a href="#" class="hover:text-gray-500">Login</a>
+        <div class="relative ml-4" id="cart-container">
+            <button id="cart-button" class="p-2 text-gray-600 hover:text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+            </button>
+            <CartPreview />
+        </div>
     </nav>
 </header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cartButton = document.getElementById('cart-button');
+        const cartPreview = document.getElementById('cart-preview');
+        const cartContainer = document.getElementById('cart-container');
+        
+        if (cartButton && cartPreview) {
+            cartButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cartPreview.classList.toggle('hidden');
+                window.updateCartUI?.();
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target instanceof Element && !cartContainer?.contains(target)) {
+                cartPreview?.classList.add('hidden');
+            }
+        });
+
+        cartContainer?.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+</script>
+
+<style>
+    .quantity-btn {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        background-color: rgb(243 244 246);
+        border-radius: 0.25rem;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
+    
+    .quantity-btn:hover {
+        background-color: rgb(229 231 235);
+    }
+</style>
