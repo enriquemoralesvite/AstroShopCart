@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+    <html>
+        <body>
+            <div class="min-h-screen flex items-center justify-center">
+                <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+                  <h2 class="text-2xl font-bold mb-6 text-center">Registro</h2>
+                  <form action="#" method="post">
+                    <div class="mb-4">
+                      <label for="email" class="block text-gray-700">Correo electrónico</label>
+                      <input type="email" id="email" name="email" required
+                             class="mt-1 block w-full px-4 py-2 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             placeholder="usuario@ejemplo.com">
+                    </div>
+                    <div class="mb-4">
+                      <label for="nombre" class="block text-gray-700">Nombre</label>
+                      <input type="text" id="nombre" name="nombre" required
+                             class="mt-1 block w-full px-4 py-2 border rounded-2xl  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             placeholder="Nombre">
+                    </div>
+                    <div class="mb-4">
+                      <label for="apellidos" class="block text-gray-700">Apellidos</label>
+                      <input type="text" id="apellidos" name="apellidos" required
+                             class="mt-1 block w-full px-4 py-2 border rounded-2xl  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             placeholder="Apellidos">
+                    </div>
+                    <div class="mb-4">
+                      <label for="dni" class="block text-gray-700">DNI</label>
+                      <!-- Validación: 8 dígitos seguidos de una letra -->
+                      <input type="text" id="dni" name="dni" required pattern="[0-9]{8}[A-Za-z]"
+                             class="mt-1 block w-full px-4 py-2 border rounded-2xl  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             placeholder="12345678A">
+                    </div>
+                    <div class="mb-4">
+                      <label for="celular" class="block text-gray-700">Celular</label>
+                      <!-- Validación: 9 dígitos numéricos -->
+                      <input type="tel" id="celular" name="celular" required pattern="[0-9]{9}"
+                             class="mt-1 block w-full px-4 py-2 border rounded-2xl  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             placeholder="999999999">
+                    </div>
+                    <div class="mb-6">
+                      <label for="password" class="block text-gray-700">Contraseña</label>
+                      <!-- Se puede ajustar el minlength según se requiera -->
+                      <input type="password" id="password" name="password" required minlength="6"
+                             class="mt-1 block w-full px-4 py-2 border rounded-2xl  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             placeholder="********">
+                    </div>
+                    <div class="text-center">
+                    <button type="submit"
+                            class="w-50 bg-blue-500 text-white py-2 rounded-3xl hover:bg-blue-800 transition duration-200">
+                             Registrar
+                        </button>
+                    </div>
+                  </form>
+                  <p class="mt-4 text-center text-gray-600">
+                    ¿Ya tienes cuenta? <a href="login.html" class="text-blue-500 hover:underline">Inicia Sesión</a>
+                  </p>
+                </div>
+              </div>
+        </body>
+    </html>
+</Layout>   
