@@ -115,11 +115,15 @@ import Footer from '../components/Footer.astro';
 
 			// Función para vaciar el carrito
 			window.clearCart = function() {
+				const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+				if (cart.length === 0) {
+					return; // No hacer nada si el carrito está vacío
+				}
+				
 				if (confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
 					localStorage.setItem('cart', JSON.stringify([]));
 					window.updateCartUI();
 					window.dispatchEvent(new CustomEvent('cartUpdated'));
-					showNotification('Carrito vaciado', 'error');
 				}
 			}
 
