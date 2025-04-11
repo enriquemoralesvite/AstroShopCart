@@ -13,15 +13,25 @@ import Footer from '../components/Footer.astro';
 		<meta name="generator" content={Astro.generator} />
 		<title>Mi Tienda</title>
 	</head>
-	<body>
+	<body class="m-0 w-full h-full">
 		<Header />
 		<main class="flex-1">
-			
 			<slot />
-		  </main>
+		</main>
 		<Footer />
 
 		<script is:inline>
+			// Función para mostrar notificaciones
+			function showNotification(message, type = 'success') {
+				const notification = document.createElement('div');
+				notification.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
+					type === 'success' ? 'bg-green-500' : 'bg-red-500'
+				} text-white`;
+				notification.textContent = message;
+				document.body.appendChild(notification);
+				setTimeout(() => notification.remove(), 3000);
+			}
+
 			// Función para actualizar la UI del carrito
 			window.updateCartUI = function() {
 				const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -29,13 +39,11 @@ import Footer from '../components/Footer.astro';
 				const cartTotal = document.getElementById('cart-total');
 				const cartBadge = document.getElementById('cart-badge');
 				
-				// Actualizar badge
 				if (cartBadge) {
 					cartBadge.textContent = cartItems.length.toString();
 					cartBadge.classList.toggle('hidden', cartItems.length === 0);
 				}
 
-				// Actualizar contenedor del carrito si existe
 				if (cartContainer && cartTotal) {
 					if (cartItems.length === 0) {
 						cartContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Tu carrito está vacío</p>';
@@ -57,7 +65,11 @@ import Footer from '../components/Footer.astro';
 									<span class="ml-2">$${(item.price * (item.quantity || 1)).toFixed(2)}</span>
 								</div>
 							</div>
-							<button onclick="removeFromCart('${item.id}')" class="text-red-500 hover:text-red-700 transition-colors">×</button>
+							<button onclick="removeFromCart('${item.id}')" class="text-gray-400 hover:text-red-400 p-2 rounded transition-colors">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+									<path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+								</svg>
+							</button>
 						</div>
 					`).join('');
 
@@ -74,14 +86,7 @@ import Footer from '../components/Footer.astro';
 					
 					window.updateCartUI();
 					window.dispatchEvent(new CustomEvent('cartUpdated'));
-					
-					// Mostrar notificación
-					const notification = document.createElement('div');
-					notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-					notification.textContent = 'Producto eliminado del carrito';
-					document.body.appendChild(notification);
-					
-					setTimeout(() => notification.remove(), 3000);
+					showNotification('Producto eliminado del carrito', 'error');
 				} catch (error) {
 					console.error('Error al eliminar del carrito:', error);
 				}
@@ -120,14 +125,7 @@ import Footer from '../components/Footer.astro';
 				
 				window.updateCartUI();
 				window.dispatchEvent(new CustomEvent('cartUpdated'));
-				
-				// Mostrar notificación
-				const notification = document.createElement('div');
-				notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-				notification.textContent = 'Producto añadido al carrito';
-				document.body.appendChild(notification);
-				
-				setTimeout(() => notification.remove(), 3000);
+				showNotification('Producto añadido al carrito');
 			}
 
 			// Inicializar el carrito cuando se carga la página
