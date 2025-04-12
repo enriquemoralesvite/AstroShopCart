@@ -8,6 +8,15 @@ interface CartItem {
     image: string;
     quantity?: number;
 }
+
+declare global {
+    interface Window {
+        updateQuantity: (id: string, change: number) => void;
+        removeFromCart: (id: string) => void;
+        updateCartUI: () => void;
+        clearCart: () => void;
+    }
+}
 ---
 
 <Layout>
@@ -184,11 +193,7 @@ interface CartItem {
             const newQuantity = currentQuantity + change;
             
             if (newQuantity <= 0) {
-                if (confirm('¿Deseas eliminar este producto del carrito?')) {
-                    cart.splice(itemIndex, 1);
-                } else {
-                    return;
-                }
+                cart.splice(itemIndex, 1);
             } else {
                 cart[itemIndex].quantity = newQuantity;
             }
@@ -200,10 +205,17 @@ interface CartItem {
     }
 
     window.removeFromCart = function(id: string) {
-        if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
-            const updatedCart = cart.filter(item => item.id !== id);
-            localStorage.setItem('cart', JSON.stringify(updatedCart));
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
+        const updatedCart = cart.filter(item => item.id !== id);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        updateCart();
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+    }
+
+    // Función para vaciar el carrito
+    window.clearCart = function() {
+        if (confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
+            localStorage.setItem('cart', JSON.stringify([]));
             updateCart();
             window.dispatchEvent(new CustomEvent('cartUpdated'));
         }
@@ -213,5 +225,11 @@ interface CartItem {
     document.addEventListener('DOMContentLoaded', () => {
         updateCart();
         window.updateCartUI?.(); // Actualizar también el preview si existe
+        
+        // Añadir evento al botón de vaciar carrito
+        const clearCartButton = document.getElementById('clear-cart');
+        if (clearCartButton) {
+            clearCartButton.addEventListener('click', window.clearCart);
+        }
     });
 </script> 
