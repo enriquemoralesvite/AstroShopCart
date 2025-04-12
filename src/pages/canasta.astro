@@ -38,6 +38,9 @@ declare global {
             <!-- Lista de productos -->
             <div class="lg:w-2/3">
                 <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <div class="p-4 border-b">
+                        <h2 class="text-lg font-semibold">Productos en el Carrito</h2>
+                    </div>
                     <table class="w-full">
                         <thead>
                             <tr class="border-b bg-gray-50">
@@ -81,6 +84,9 @@ declare global {
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
+                    </button>
+                    <button id="clear-cart" class="w-full mt-4 bg-red-300 text-white py-3 rounded hover:bg-red-600 transition-colors text-center" onclick="window.clearCart()">
+                        Vaciar Carrito
                     </button>
                 </div>
             </div>
@@ -231,6 +237,11 @@ declare global {
 
     // Función para vaciar el carrito
     window.clearCart = function() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (cart.length === 0) {
+            return; // No hacer nada si el carrito está vacío
+        }
+        
         togglePopup(true);
     }
 
