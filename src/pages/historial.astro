@@ -1,0 +1,266 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface CartItem {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    quantity?: number;
+}
+---
+
+<Layout>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-6">Tus Ordenes</h1>
+
+        <!-- Pedido 1 -->
+        <div class="bg-gray-100 rounded-md mb-4">
+            <div class="flex justify-between items-center px-4 py-3">
+                <div>
+                    <p class="font-medium">
+                        Order <span class="text-gray-600">#kb40cz8</span>
+                    </p>
+                    <p class="text-sm text-gray-500">Placed on April 5, 2025</p>
+                </div>
+                <p class="text-lg font-semibold flex items-center gap-1">
+                    $329.99
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-up-fill"
+                        viewBox="0 0 16 16"
+                    >
+                        <path
+                            d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"
+                        ></path>
+                    </svg>
+                </p>
+            </div>
+        </div>
+
+        <!-- Pedido 2 (desplegado) -->
+        <div class="bg-gray-100 rounded-md mb-4">
+            <div class="flex justify-between items-center px-4 py-3">
+                <div>
+                    <p class="font-medium">
+                        Order <span class="text-gray-600">#mi3oncl</span>
+                    </p>
+                    <p class="text-sm text-gray-500">Placed on April 5, 2025</p>
+                </div>
+                <p class="text-lg font-semibold flex items-center gap-1">
+                    $129.99
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-down-fill"
+                        viewBox="0 0 16 16"
+                    >
+                        <path
+                            d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"
+                        ></path>
+                    </svg>
+                    <path
+                        d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"
+                    ></path>
+                </p>
+            </div>
+        </div>
+        <div class="p-4 bg-gray-50">
+            <h2 class="font-semibold mb-2">Order Items</h2>
+            <table class="w-full text-sm mb-3">
+                <thead>
+                    <tr class="text-left text-gray-500 border-b">
+                        <th class="py-2">Product</th>
+                        <th class="py-2">Quantity</th>
+                        <th class="py-2">Price</th>
+                        <th class="py-2">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="py-2">Auriculares Inalámbricos</td>
+                        <td class="py-2">1</td>
+                        <td class="py-2">$129.99</td>
+                        <td class="py-2">$129.99</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="text-sm flex justify-between">
+                <span class="font-medium">Status:</span>
+                <span class="text-gray-600">pending</span>
+            
+            </p>
+        </div>
+    </div>
+</Layout>
+
+<script>
+    interface CartItem {
+        id: string;
+        name: string;
+        price: number;
+        image: string;
+        quantity?: number;
+    }
+
+    function updateCart() {
+        const cart = JSON.parse(
+            localStorage.getItem("cart") || "[]",
+        ) as CartItem[];
+        const cartContainer = document.getElementById("cart-items");
+        const cartDetails = document.getElementById("cart-details");
+        const subtotalElement = document.getElementById("subtotal");
+        const totalElement = document.getElementById("total");
+        const checkoutButton = document.getElementById("checkout-button");
+
+        if (
+            !cartContainer ||
+            !cartDetails ||
+            !subtotalElement ||
+            !totalElement ||
+            !checkoutButton
+        ) {
+            console.error("No se encontraron elementos necesarios del DOM");
+            return;
+        }
+
+        if (cart.length === 0) {
+            cartContainer.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-8">
+                        <p class="text-gray-500 mb-4">Tu carrito está vacío</p>
+                        <a href="/" class="text-blue-600 hover:underline">Continuar Comprando</a>
+                    </td>
+                </tr>
+            `;
+            cartDetails.innerHTML = "";
+            subtotalElement.textContent = "$0.00";
+            totalElement.textContent = "$0.00";
+            checkoutButton.setAttribute("disabled", "true");
+            checkoutButton.classList.add("opacity-50", "cursor-not-allowed");
+            return;
+        }
+
+        let subtotal = 0;
+        // Actualizar tabla principal
+        cartContainer.innerHTML = cart
+            .map((item: CartItem) => {
+                const itemTotal = item.price * (item.quantity || 1);
+                subtotal += itemTotal;
+                return `
+                <tr class="border-b hover:bg-gray-50" data-item-id="${item.id}">
+                    <td class="p-4">
+                        <div class="flex items-center gap-4">
+                            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+                            <div>
+                                <h3 class="font-medium">${item.name}</h3>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="window.updateQuantity('${item.id}', -1)" class="w-8 h-8 rounded border hover:bg-gray-100">−</button>
+                            <span class="w-8 text-center">${item.quantity || 1}</span>
+                            <button onclick="window.updateQuantity('${item.id}', 1)" class="w-8 h-8 rounded border hover:bg-gray-100">+</button>
+                        </div>
+                    </td>
+                    <td class="p-4 text-right text-gray-500">$${item.price.toFixed(2)}</td>
+                    <td class="p-4 text-right font-medium">$${itemTotal.toFixed(2)}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="window.removeFromCart('${item.id}')" class="text-red-500 hover:text-red-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            })
+            .join("");
+
+        // Actualizar detalle
+        cartDetails.innerHTML = `
+            ${cart
+                .map(
+                    (item) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-4">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <h3 class="font-medium">${item.name}</h3>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center text-gray-600">${item.quantity || 1}</td>
+                    <td class="p-4 text-right text-gray-500">$${item.price.toFixed(2)}</td>
+                    <td class="p-4 text-right font-medium">$${(item.price * (item.quantity || 1)).toFixed(2)}</td>
+                    <td></td>
+                </tr>
+            `,
+                )
+                .join("")}
+            <tr class="bg-gray-50 font-semibold">
+                <td colspan="2" class="p-4 text-left">Total</td>
+                <td class="p-4 text-right"></td>
+                <td class="p-4 text-right">$${subtotal.toFixed(2)}</td>
+                <td></td>
+            </tr>
+        `;
+
+        subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+        totalElement.textContent = `$${subtotal.toFixed(2)}`;
+
+        checkoutButton.removeAttribute("disabled");
+        checkoutButton.classList.remove("opacity-50", "cursor-not-allowed");
+    }
+
+    // Declarar las funciones en el objeto window
+    window.updateQuantity = function (id: string, change: number) {
+        const cart = JSON.parse(
+            localStorage.getItem("cart") || "[]",
+        ) as CartItem[];
+        const itemIndex = cart.findIndex((item) => item.id === id);
+
+        if (itemIndex !== -1) {
+            const currentQuantity = cart[itemIndex].quantity || 1;
+            const newQuantity = currentQuantity + change;
+
+            if (newQuantity <= 0) {
+                if (confirm("¿Deseas eliminar este producto del carrito?")) {
+                    cart.splice(itemIndex, 1);
+                } else {
+                    return;
+                }
+            } else {
+                cart[itemIndex].quantity = newQuantity;
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCart();
+            window.dispatchEvent(new CustomEvent("cartUpdated"));
+        }
+    };
+
+    window.removeFromCart = function (id: string) {
+        if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+            const cart = JSON.parse(
+                localStorage.getItem("cart") || "[]",
+            ) as CartItem[];
+            const updatedCart = cart.filter((item) => item.id !== id);
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
+            updateCart();
+            window.dispatchEvent(new CustomEvent("cartUpdated"));
+        }
+    };
+
+    // Inicializar el carrito cuando se carga la página
+    document.addEventListener("DOMContentLoaded", () => {
+        updateCart();
+        window.updateCartUI?.(); // Actualizar también el preview si existe
+    });
+</script>
