@@ -1,0 +1,225 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface CartItem {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    quantity?: number;
+}
+---
+
+<Layout>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-6">Verificar</h1>
+        <div class="w-full max-w-[800px] mx-auto mb-7 flex flex-col gap-5">
+            <div class="w-full flex flex-col md:flex-row gap-6">
+                <label for="fullName" class="w-full flex flex-col gap-2 items-start">
+                    Full Name
+                    <input type="text" class="w-full border-1 border-black px-3 py-2 rounded-[5px] outline-none" />
+                </label>
+                <label for="fullName" class="w-full flex flex-col gap-2 items-start">
+                    Full Name
+                    <input type="text" class="w-full border-1 border-black px-3 py-2 rounded-[5px] outline-none" />
+                </label>
+            </div>
+            <div class="w-full flex flex-col md:flex-row gap-6">
+                <label for="fullName" class="w-full flex flex-col gap-2 items-start">
+                    Full Name
+                    <input type="text" class="w-full border-1 border-black px-3 py-2 rounded-[5px] outline-none" />
+                </label>
+                <label for="fullName" class="w-full flex flex-col gap-2 items-start">
+                    Full Name
+                    <input type="text" class="w-full border-1 border-black px-3 py-2 rounded-[5px] outline-none" />
+                </label>
+            </div>
+            <div class="w-full flex flex-col md:flex-row gap-6">
+                <label for="fullName" class="w-full flex flex-col gap-2 items-start">
+                    Full Name
+                    <input type="text" class="w-full border-1 border-black px-3 py-2 rounded-[5px] outline-none" />
+                </label>
+                <label for="fullName" class="w-full flex flex-col gap-2 items-start">
+                    Full Name
+                    <input type="text" class="w-full border-1 border-black px-3 py-2 rounded-[5px] outline-none" />
+                </label>
+            </div>
+        </div>
+        <div class="w-full max-w-[800px] mx-auto mb-7">
+            <h2 class="font-bold text-[1.3rem] mb-3">Información Pago</h2>
+            <p class="text-[#757575]">Esta es una tienda de demostración. No se procesará ningún pago.</p>
+        </div>
+        <div class="w-full max-w-[800px] m-auto border-1 border-black p-3 mb-7 bg-[#e0e0e061]">
+            <h3 class="font-bold text-[1rem] mb-2">Simulación de Pago</h3>
+            <p class="text-[#757575] text-[.9rem]">En una tienda real, la integración de la pasarela de pago estaría aquí.</p>
+        </div>
+        <button class="w-full max-w-[800px] block mx-auto bg-black text-white py-3 rounded-[8px]">Place order</button>
+    </div>
+</Layout>
+
+<script>
+    interface CartItem {
+        id: string;
+        name: string;
+        price: number;
+        image: string;
+        quantity?: number;
+    }
+
+    function updateCart() {
+        const cart = JSON.parse(
+            localStorage.getItem("cart") || "[]",
+        ) as CartItem[];
+        const cartContainer = document.getElementById("cart-items");
+        const cartDetails = document.getElementById("cart-details");
+        const subtotalElement = document.getElementById("subtotal");
+        const totalElement = document.getElementById("total");
+        const checkoutButton = document.getElementById("checkout-button");
+
+        if (
+            !cartContainer ||
+            !cartDetails ||
+            !subtotalElement ||
+            !totalElement ||
+            !checkoutButton
+        ) {
+            console.error("No se encontraron elementos necesarios del DOM");
+            return;
+        }
+
+        if (cart.length === 0) {
+            cartContainer.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-8">
+                        <p class="text-gray-500 mb-4">Tu carrito está vacío</p>
+                        <a href="/" class="text-blue-600 hover:underline">Continuar Comprando</a>
+                    </td>
+                </tr>
+            `;
+            cartDetails.innerHTML = "";
+            subtotalElement.textContent = "$0.00";
+            totalElement.textContent = "$0.00";
+            checkoutButton.setAttribute("disabled", "true");
+            checkoutButton.classList.add("opacity-50", "cursor-not-allowed");
+            return;
+        }
+
+        let subtotal = 0;
+        // Actualizar tabla principal
+        cartContainer.innerHTML = cart
+            .map((item: CartItem) => {
+                const itemTotal = item.price * (item.quantity || 1);
+                subtotal += itemTotal;
+                return `
+                <tr class="border-b hover:bg-gray-50" data-item-id="${item.id}">
+                    <td class="p-4">
+                        <div class="flex items-center gap-4">
+                            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+                            <div>
+                                <h3 class="font-medium">${item.name}</h3>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="window.updateQuantity('${item.id}', -1)" class="w-8 h-8 rounded border hover:bg-gray-100">−</button>
+                            <span class="w-8 text-center">${item.quantity || 1}</span>
+                            <button onclick="window.updateQuantity('${item.id}', 1)" class="w-8 h-8 rounded border hover:bg-gray-100">+</button>
+                        </div>
+                    </td>
+                    <td class="p-4 text-right text-gray-500">$${item.price.toFixed(2)}</td>
+                    <td class="p-4 text-right font-medium">$${itemTotal.toFixed(2)}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="window.removeFromCart('${item.id}')" class="text-red-500 hover:text-red-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            })
+            .join("");
+
+        // Actualizar detalle
+        cartDetails.innerHTML = `
+            ${cart
+                .map(
+                    (item) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-4">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <h3 class="font-medium">${item.name}</h3>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center text-gray-600">${item.quantity || 1}</td>
+                    <td class="p-4 text-right text-gray-500">$${item.price.toFixed(2)}</td>
+                    <td class="p-4 text-right font-medium">$${(item.price * (item.quantity || 1)).toFixed(2)}</td>
+                    <td></td>
+                </tr>
+            `,
+                )
+                .join("")}
+            <tr class="bg-gray-50 font-semibold">
+                <td colspan="2" class="p-4 text-left">Total</td>
+                <td class="p-4 text-right"></td>
+                <td class="p-4 text-right">$${subtotal.toFixed(2)}</td>
+                <td></td>
+            </tr>
+        `;
+
+        subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+        totalElement.textContent = `$${subtotal.toFixed(2)}`;
+
+        checkoutButton.removeAttribute("disabled");
+        checkoutButton.classList.remove("opacity-50", "cursor-not-allowed");
+    }
+
+    // Declarar las funciones en el objeto window
+    window.updateQuantity = function (id: string, change: number) {
+        const cart = JSON.parse(
+            localStorage.getItem("cart") || "[]",
+        ) as CartItem[];
+        const itemIndex = cart.findIndex((item) => item.id === id);
+
+        if (itemIndex !== -1) {
+            const currentQuantity = cart[itemIndex].quantity || 1;
+            const newQuantity = currentQuantity + change;
+
+            if (newQuantity <= 0) {
+                if (confirm("¿Deseas eliminar este producto del carrito?")) {
+                    cart.splice(itemIndex, 1);
+                } else {
+                    return;
+                }
+            } else {
+                cart[itemIndex].quantity = newQuantity;
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCart();
+            window.dispatchEvent(new CustomEvent("cartUpdated"));
+        }
+    };
+
+    window.removeFromCart = function (id: string) {
+        if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+            const cart = JSON.parse(
+                localStorage.getItem("cart") || "[]",
+            ) as CartItem[];
+            const updatedCart = cart.filter((item) => item.id !== id);
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
+            updateCart();
+            window.dispatchEvent(new CustomEvent("cartUpdated"));
+        }
+    };
+
+    // Inicializar el carrito cuando se carga la página
+    document.addEventListener("DOMContentLoaded", () => {
+        updateCart();
+        window.updateCartUI?.(); // Actualizar también el preview si existe
+    });
+</script>
+

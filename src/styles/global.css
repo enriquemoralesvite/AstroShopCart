@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+.referencial {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    background-color: #e0e0e061;
+}
