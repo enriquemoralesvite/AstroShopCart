@@ -20,10 +20,18 @@ const { id, name, price, image, description } = Astro.props;
             onclick={`(function(){
                 const item = { id: '${id}', name: '${name}', price: ${price}, image: '${image}' };
                 const cart = JSON.parse(localStorage.getItem('cart')) || [];
-                cart.push(item);
+                const existingItemIndex = cart.findIndex(cartItem => cartItem.id === '${id}');
+                
+                if (existingItemIndex !== -1) {
+                    // Si el item ya existe, incrementar su cantidad
+                    cart[existingItemIndex].quantity = (cart[existingItemIndex].quantity || 1) + 1;
+                } else {
+                    // Si el item no existe, agregarlo con cantidad 1
+                    cart.push({...item, quantity: 1});
+                }
+                
                 localStorage.setItem('cart', JSON.stringify(cart));
-                if (typeof updateCartPreview === 'function') updateCartPreview();
-                if (typeof updateCartBadge === 'function') updateCartBadge();
+                if (typeof window.updateCartUI === 'function') window.updateCartUI();
                 const notification = document.createElement('div');
                 notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
                 notification.textContent = 'Producto añadido al carrito';

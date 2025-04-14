@@ -8,16 +8,39 @@ interface CartItem {
     image: string;
     quantity?: number;
 }
+
+declare global {
+    interface Window {
+        updateQuantity: (id: string, change: number) => void;
+        removeFromCart: (id: string) => void;
+        updateCartUI: () => void;
+        clearCart: () => void;
+    }
+}
 ---
 
 <Layout>
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold mb-8">Tu Carrito</h1>
         
+        <!-- Popup de confirmación -->
+        <div id="confirm-popup" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 hidden z-50">
+            <div class="bg-white p-4 rounded shadow-lg">
+                <p class="mb-4">¿Estás seguro que desea vaciar el carrito de compras?</p>
+                <div class="flex justify-end gap-2">
+                    <button id="cancel-clear" class="px-4 py-1 border border-gray-300 rounded">Cancelar</button>
+                    <button id="confirm-clear" class="px-4 py-1 bg-blue-500 text-white rounded">Aceptar</button>
+                </div>
+            </div>
+        </div>
+
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Lista de productos -->
             <div class="lg:w-2/3">
                 <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <div class="p-4 border-b">
+                        <h2 class="text-lg font-semibold">Productos en el Carrito</h2>
+                    </div>
                     <table class="w-full">
                         <thead>
                             <tr class="border-b bg-gray-50">
@@ -56,11 +79,14 @@ interface CartItem {
                             <span id="total">$0.00</span>
                         </div>
                     </div>
-                    <button id="checkout-button" class="w-full mt-6 bg-black text-white py-3 rounded hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+                    <button id="checkout-button" class="w-full mt-6 bg-black text-white py-3 rounded hover:bg-gray-800 transition-colors flex items-center justify-center gap-2" onclick="return false;">
                         Proceder al Pago
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
+                    </button>
+                    <button id="clear-cart" class="w-full mt-4 bg-red-300 text-white py-3 rounded hover:bg-red-600 transition-colors text-center" onclick="window.clearCart()">
+                        Vaciar Carrito
                     </button>
                 </div>
             </div>
@@ -102,8 +128,6 @@ interface CartItem {
             cartDetails.innerHTML = '';
             subtotalElement.textContent = '$0.00';
             totalElement.textContent = '$0.00';
-            checkoutButton.setAttribute('disabled', 'true');
-            checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
             return;
         }
 
@@ -184,11 +208,7 @@ interface CartItem {
             const newQuantity = currentQuantity + change;
             
             if (newQuantity <= 0) {
-                if (confirm('¿Deseas eliminar este producto del carrito?')) {
-                    cart.splice(itemIndex, 1);
-                } else {
-                    return;
-                }
+                cart.splice(itemIndex, 1);
             } else {
                 cart[itemIndex].quantity = newQuantity;
             }
@@ -200,18 +220,53 @@ interface CartItem {
     }
 
     window.removeFromCart = function(id: string) {
-        if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
-            const updatedCart = cart.filter(item => item.id !== id);
-            localStorage.setItem('cart', JSON.stringify(updatedCart));
-            updateCart();
-            window.dispatchEvent(new CustomEvent('cartUpdated'));
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
+        const updatedCart = cart.filter(item => item.id !== id);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        updateCart();
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+    }
+
+    // Función para mostrar/ocultar el popup
+    function togglePopup(show: boolean) {
+        const popup = document.getElementById('confirm-popup');
+        if (popup) {
+            popup.classList.toggle('hidden', !show);
         }
+    }
+
+    // Función para vaciar el carrito
+    window.clearCart = function() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (cart.length === 0) {
+            return; // No hacer nada si el carrito está vacío
+        }
+        
+        togglePopup(true);
     }
 
     // Inicializar el carrito cuando se carga la página
     document.addEventListener('DOMContentLoaded', () => {
         updateCart();
         window.updateCartUI?.(); // Actualizar también el preview si existe
+        
+        // Añadir eventos a los botones del popup
+        const confirmButton = document.getElementById('confirm-clear');
+        const cancelButton = document.getElementById('cancel-clear');
+        
+        if (confirmButton) {
+            confirmButton.addEventListener('click', () => {
+                localStorage.setItem('cart', JSON.stringify([]));
+                updateCart();
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
+                togglePopup(false);
+            });
+        }
+        
+        if (cancelButton) {
+            cancelButton.addEventListener('click', () => {
+                togglePopup(false);
+            });
+        }
     });
 </script> 
