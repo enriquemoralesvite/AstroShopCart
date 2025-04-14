@@ -31,9 +31,14 @@ declare global {
             <span class="font-semibold">Total</span>
             <span id="cart-total" class="font-semibold">$0.00</span>
         </div>
-        <a href="/canasta" class="block w-full bg-black text-white px-4 py-2 rounded text-center hover:bg-gray-800 transition-colors">
-            Ver Carrito
-        </a>
+        <div class="space-y-2">
+            <a href="/canasta" class="block w-full bg-black text-white px-4 py-2 rounded text-center hover:bg-gray-800 transition-colors">
+                Ver Carrito
+            </a>
+            <button id="clear-cart" class="block w-full bg-red-300 text-white px-4 py-2 rounded text-center hover:bg-red-600 transition-colors">
+                Vaciar Carrito
+            </button>
+        </div>
     </div>
 </div>
 
@@ -106,11 +111,7 @@ declare global {
             const newQuantity = currentQuantity + change;
             
             if (newQuantity <= 0) {
-                if (confirm('¿Deseas eliminar este producto del carrito?')) {
-                    cart.splice(itemIndex, 1);
-                } else {
-                    return;
-                }
+                cart.splice(itemIndex, 1);
             } else {
                 cart[itemIndex].quantity = newQuantity;
             }
@@ -123,13 +124,11 @@ declare global {
 
     // Función para eliminar del carrito
     window.removeFromCart = function(id: string) {
-        if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
-            const updatedCart = cart.filter((item: CartItem) => item.id !== id);
-            localStorage.setItem('cart', JSON.stringify(updatedCart));
-            window.updateCartUI();
-            window.dispatchEvent(new CustomEvent('cartUpdated'));
-        }
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]') as CartItem[];
+        const updatedCart = cart.filter((item: CartItem) => item.id !== id);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        window.updateCartUI();
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
     }
 
     // Inicializar

@@ -102,16 +102,26 @@ import Footer from '../components/Footer.astro';
 					const newQuantity = currentQuantity + change;
 					
 					if (newQuantity <= 0) {
-						if (confirm('¿Deseas eliminar este producto del carrito?')) {
-							cart.splice(itemIndex, 1);
-						} else {
-							return;
-						}
+						cart.splice(itemIndex, 1);
 					} else {
 						cart[itemIndex].quantity = newQuantity;
 					}
 					
 					localStorage.setItem('cart', JSON.stringify(cart));
+					window.updateCartUI();
+					window.dispatchEvent(new CustomEvent('cartUpdated'));
+				}
+			}
+
+			// Función para vaciar el carrito
+			window.clearCart = function() {
+				const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+				if (cart.length === 0) {
+					return; // No hacer nada si el carrito está vacío
+				}
+				
+				if (confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
+					localStorage.setItem('cart', JSON.stringify([]));
 					window.updateCartUI();
 					window.dispatchEvent(new CustomEvent('cartUpdated'));
 				}
@@ -129,7 +139,11 @@ import Footer from '../components/Footer.astro';
 			}
 
 			// Inicializar el carrito cuando se carga la página
-			document.addEventListener('DOMContentLoaded', window.updateCartUI);
+			document.addEventListener('DOMContentLoaded', () => {
+				window.updateCartUI();
+				// Añadir evento al botón de vaciar carrito
+				document.getElementById('clear-cart')?.addEventListener('click', window.clearCart);
+			});
 		</script>
 	</body>
 </html>
