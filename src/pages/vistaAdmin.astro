@@ -1,34 +1,40 @@
-<body class="flex items-start justify-start h-screen px-15 py-10">
-    <div class="flex flex-col gap-8">
-        <h2 class="text-3xl font-bold">AGREGAR NUEVO PRODUCTO</h2>
-        <form class="flex flex-col gap-2">
-            <label class="text-xl" for="producto">Nombre del Producto</label>
-            <input class="mb-2 border rounded py-2 text-2xl" type="text">
+---
+import Layout from "../layouts/Layout.astro";
+---
 
-            <label class="text-xl" for="descripcion">Descripción</label>
-            <textarea class="mb-2 border rounded py-6 text-2xl"></textarea>
-
-            <div class="flex items-center gap-6">
-                <div class="flex flex-col">
-                    <label class="text-xl" for="precio">Precio($)</label>
-                    <input class="items-center mb-2 border rounded py-2 text-2xl" type="text">
-                </div>
-                <div class="flex flex-col">
-                    <label class="text-xl" for="stock">Stock</label>
-                    <input class="items-center mb-2 border rounded py-2 text-2xl" type="text">
-                </div>
+<Layout>
+        <div class="flex items-start justify-start h-screen px-15 py-10">
+            <div class="flex flex-col gap-8">
+                <h2 class="text-3xl font-bold">AGREGAR NUEVO PRODUCTO</h2>
+                <form class="flex flex-col gap-2">
+                    <label class="text-xl" for="producto">Nombre del Producto</label>
+                    <input class="mb-2 border rounded py-2 text-2xl" type="text">
+        
+                    <label class="text-xl" for="descripcion">Descripción</label>
+                    <textarea class="mb-2 border rounded py-6 text-2xl"></textarea>
+        
+                    <div class="flex items-center gap-6">
+                        <div class="flex flex-col">
+                            <label class="text-xl" for="precio">Precio($)</label>
+                            <input class="items-center mb-2 border rounded py-2 text-2xl" type="text">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-xl" for="stock">Stock</label>
+                            <input class="items-center mb-2 border rounded py-2 text-2xl" type="text">
+                        </div>
+                    </div>
+        
+                    <label class="text-xl" for="categoria">Categoria</label>
+                    <input class="mb-2 border rounded py-2 text-2xl" type="text">
+        
+                    <label class="text-xl" for="imagen">Imagen URL</label>
+                    <input class="mb-2 border rounded py-2 text-2xl" type="url">
+        
+                    <div class="flex justify-start items-center gap-4 mt-4">
+                        <button type="submit" class="bg-black transition duration-300 hover:bg-gray-700 px-6 py-2 rounded-md cursor-pointer text-white text-xl">Añadir Producto</button>
+                        <button type="reset" class="bg-white transition duration-300 hover:bg-gray-700 px-6 py-2 rounded-md cursor-pointer text-black border text-xl">Cancelar</button>
+                    </div>
+                </form>
             </div>
-
-            <label class="text-xl" for="categoria">Categoria</label>
-            <input class="mb-2 border rounded py-2 text-2xl" type="text">
-
-            <label class="text-xl" for="imagen">Imagen URL</label>
-            <input class="mb-2 border rounded py-2 text-2xl" type="url">
-
-            <div class="flex justify-start items-center gap-4 mt-4">
-                <button type="submit" class="bg-black transition duration-300 hover:bg-gray-700 px-6 py-2 rounded-md cursor-pointer text-white text-xl">Añadir Producto</button>
-                <button type="reset" class="bg-white transition duration-300 hover:bg-gray-700 px-6 py-2 rounded-md cursor-pointer text-black border text-xl">Cancelar</button>
-            </div>
-        </form>
-    </div>
-</body>
+        </div>
+</Layout>

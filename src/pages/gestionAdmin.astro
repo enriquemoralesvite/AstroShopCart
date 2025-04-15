@@ -1,0 +1,41 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+    <div class="flex flex-col p-8 gap-6">
+        <h2 class="text-4xl font-bold">Productos</h2>
+        
+        <div class="flex items-center justify-between">
+            <h3 class="text-xl font-semibold">Productos en venta (1)</h3>
+            <button type="button" class="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-700 transition duration-300 cursor-pointer">Añadir Producto</button>
+        </div>
+        <div class="overflow-x-auto rounded-lg shadow">
+            <table class="w-full border-collapse">
+                <thead class="bg-gray-100 text-left text-gray-700">
+                    <tr>
+                        <th class="text-center p-4">Nombre</th>
+                        <th class="text-center p-4">Categoría</th>
+                        <th class="text-center p-4">Precio</th>
+                        <th class="text-center p-4">Stock</th>
+                        <th class="p-4 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="text-center p-4">Laptop</td>
+                        <td class="text-center p-4">Electrónicos</td>
+                        <td class="text-center p-4">$10.00</td>
+                        <td class="text-center p-4">100</td>
+                        <td class="p-4 text-center">
+                            <div class="flex justify-center gap-2">
+                                <button type="button" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition cursor-pointer">X</button>
+                                <button type="button" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition cursor-pointer">Editar</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>      
+</Layout>
