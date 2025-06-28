@@ -1,15 +1,15 @@
 ---
 const categories = [
-  { id: 'all', name: 'Todos los productos' },
-  { id: 'electronics', name: 'Electrónicos' },
-  { id: 'clothing', name: 'Ropa' },
-  { id: 'books', name: 'Libros' },
-  { id: 'home', name: 'Hogar' }
+  { id: 'all', name: 'All products' },
+  { id: 'electronics', name: 'Electronics' },
+  { id: 'clothing', name: 'Clothing' },
+  { id: 'books', name: 'Books' },
+  { id: 'home', name: 'Home' }
 ];
 ---
 
 <div class="space-y-4 mb-8">
-  <h2 class="font-semibold text-lg">Categorías</h2>
+  <h2 class="font-semibold text-lg">Categories</h2>
   <div class="flex flex-col space-y-2">
     {categories.map(category => (
       <a
