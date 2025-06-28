@@ -18,6 +18,9 @@ A minimal shopping page built with **Astro**, featuring a fully functional cart 
 
 ## 🗂️ Project Structure
 
+
+
+
 ```text
 /
 ├── public/                # Static assets (images, icons)
@@ -30,3 +33,29 @@ A minimal shopping page built with **Astro**, featuring a fully functional cart 
 │   └── styles/            # Global or component CSS
 ├── astro.config.mjs       # Astro configuration
 └── package.json           # Scripts & dependencies
+
+
+---
+
+## 🧩 Key Components
+
+- `Grilla.astro` – Product grid display  
+- `CartPreview.astro` – Shopping cart preview  
+- `Header.astro` – Navigation and cart controls  
+- `Tarjeta.astro` – Product card component  
+
+---
+
+## ⚙️ Getting Started
+
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+pnpm install
+
+pnpm run dev
+pnpm run build
+
+```
+👉 **[Live Demo](https://astro-shopcart.vercel.app/)**
